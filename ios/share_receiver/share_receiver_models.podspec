@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name             = 'share_receiver'
+  s.name             = 'share_receiver_models'
   s.version          = '1.0.0'
   s.summary          = 'Share Receiver model classes (no Flutter dependency)'
   s.description      = <<-DESC
