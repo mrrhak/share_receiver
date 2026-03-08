@@ -1,0 +1,41 @@
+name: share_receiver
+description: "A Flutter plugin for iOS and Android to handle incoming shared text or media from other apps."
+maintainer: Mrr Hak
+homepage: https://mrrhak.com
+repository: https://github.com/mrrhak/share_receiver/tree/master
+issue_tracker: https://github.com/mrrhak/share_receiver/issues
+version: 1.0.0
+funding:
+  - https://ko-fi.com/mrrhak
+screenshots:
+  - description: "Share Receiver"
+    path: assets/share_receiver_preview.png
+
+topics:
+  - share-receiver
+  - share-handler
+  - share-intent
+  - share-extension
+
+environment:
+  sdk: ^3.11.1
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.mrrhak.share_receiver
+        pluginClass: ShareReceiverPlugin
+      ios:
+        pluginClass: ShareReceiverPlugin
