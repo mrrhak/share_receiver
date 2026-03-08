@@ -231,12 +231,12 @@ flutter pub add share_receiver
 
 5. Add a group identifier to both the `Runner` and `ShareExtension` Targets
    - In Xcode, select Runner -> Targets -> Runner -> Signing & Capabilities
-   - Click the '+' button and select 'App Groups'
+   - Click the '+' button and select `App Groups`
    - Add a new group (default is your bundle identifier prefixed by `group.`. ex. `group.com.company.app`)
    - Repeat those above 3 steps inside of the `ShareExtension` target adding/selecting the same group id
 6. (Optional) If you made a custom group identifier that isn't your bundle identifier prefixed by 'group.', make sure to add a custom build setting variable that is referenced in your ShareExtension's Info.plist file.
    - Go to Targets -> ShareExtension -> Build Settings
-   - Click the '+' icon and select 'Add User-Defined Setting'
+   - Click the '+' icon and select `Add User-Defined Setting`
    - Give it the key `CUSTOM_GROUP_ID` and the value of the app group identifier that you gave to both targets in the previous step
    - Repeat the above steps for the `Runner` target
 7. If your project use `Swift Package Manager` please skip this step, Otherwise if use `CocoaPods` required add the following code inside `ios/Podfile` within the `target 'Runner' do` block, and then run `pod install` inside the `ios` directory.
@@ -257,7 +257,7 @@ target 'Runner' do
 end
 ```
 
-1. In Xcode, replace the contents of `ShareExtension/ShareViewController.swift` with the following code. The share extension doesn't launch a UI of its own, instead it serializes the shared content/media and saves it to the groups shared preferences, then opens a deep link into the main app so your flutter/dart code can then read the serialized data and handle it accordingly. 
+8. In Xcode, replace the contents of `ShareExtension/ShareViewController.swift` with the following code. The share extension doesn't launch a UI of its own, instead it serializes the shared content/media and saves it to the groups shared preferences, then opens a deep link into the main app so your flutter/dart code can then read the serialized data and handle it accordingly. 
 
 ```swift
 import share_receiver
