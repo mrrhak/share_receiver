@@ -348,7 +348,7 @@ class _MyAppState extends State<MyApp> {
     final initial = await ShareReceiver.instance.getInitialSharing();
     if (initial != null) {
       print('Received initial share data: $initial');
-      setState(() => _sharedData = initial); d
+      setState(() => _sharedData = initial);
       // Clear the initial data
       ShareReceiver.instance.clear();
     }

@@ -1,7 +1,7 @@
 import Flutter
 import UIKit
 
-public class ShareReceiverPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
+public class ShareReceiverPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, FlutterSceneLifeCycleDelegate {
   private var eventSink: FlutterEventSink?
   private var customAppGroupId: String?
 
@@ -14,6 +14,7 @@ public class ShareReceiverPlugin: NSObject, FlutterPlugin, FlutterStreamHandler 
 
     registrar.addMethodCallDelegate(instance, channel: methodChannel)
     registrar.addApplicationDelegate(instance)
+    registrar.addSceneDelegate(instance)
     eventChannel.setStreamHandler(instance)
 
     Self.log("Registered successfully")
@@ -189,7 +190,32 @@ public class ShareReceiverPlugin: NSObject, FlutterPlugin, FlutterStreamHandler 
   }
 }
 
-// MARK: - UIApplicationDelegate for handling app lifecycle
+// MARK: - UISceneDelegate for handling scene lifecycle (Flutter >= 3.38.0)
+extension ShareReceiverPlugin {
+  public func sceneDidBecomeActive(_ scene: UIScene) {
+    Self.log("sceneDidBecomeActive")
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+      self?.sendShareDataToFlutter()
+    }
+  }
+
+  public func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) -> Bool {
+    for context in URLContexts {
+      let url = context.url
+      Self.log("Open url: \(url)")
+      if url.scheme?.starts(with: "ShareMedia") == true {
+        Self.log("ShareMedia URL detected")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+          self?.sendShareDataToFlutter()
+        }
+        return true
+      }
+    }
+    return false
+  }
+}
+
+// MARK: - UIApplicationDelegate for handling app lifecycle (fallback for apps without UIScene)
 extension ShareReceiverPlugin {
   public func application(
     _ application: UIApplication,
