@@ -17,7 +17,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		FD9CD0132F5C969A00265B35 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FD9CD0092F5C969A00265B35 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		FDE8745A2F5D177E00395A2E /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = FDE874592F5D177E00395A2E /* FlutterGeneratedPluginSwiftPackage */; };
+		FD0001012F5CA11400000001 /* share-receiver-models in Frameworks */ = {isa = PBXBuildFile; productRef = FD0001022F5CA11400000002 /* share-receiver-models */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,7 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FDE8745A2F5D177E00395A2E /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
+				FD0001012F5CA11400000001 /* share-receiver-models in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,7 +249,7 @@
 			);
 			name = ShareExtension;
 			packageProductDependencies = (
-				FDE874592F5D177E00395A2E /* FlutterGeneratedPluginSwiftPackage */,
+				FD0001022F5CA11400000002 /* share-receiver-models */,
 			);
 			productName = ShareExtension;
 			productReference = FD9CD0092F5C969A00265B35 /* ShareExtension.appex */;
@@ -289,6 +289,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
+				FD0001032F5CA11400000003 /* share_receiver */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -881,14 +882,22 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		FD0001032F5CA11400000003 /* share_receiver */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../ios/share_receiver;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FlutterGeneratedPluginSwiftPackage;
 		};
-		FDE874592F5D177E00395A2E /* FlutterGeneratedPluginSwiftPackage */ = {
+		FD0001022F5CA11400000002 /* share-receiver-models */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FlutterGeneratedPluginSwiftPackage;
+			package = FD0001032F5CA11400000003 /* share_receiver */;
+			productName = "share-receiver-models";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,3 +1,3 @@
-import share_receiver
+import share_receiver_models
 
 class ShareViewController: ShareReceiverServiceViewController {}

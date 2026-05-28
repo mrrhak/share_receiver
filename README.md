@@ -177,9 +177,11 @@ flutter pub add share_receiver
 ```
 
 2. Create Share Extension
-   - In Xcode, go to the menu and select File → New → Target → choose "Share Extension"
+   - In Xcode, go to the menu and select **File → New → Target** → choose **Share Extension**
    - Give it the name `ShareExtension` and save
+
 3. Go to Build Phases of your `Runner` target and move `Embed Foundation Extension` to the top of `Thin Binary`.
+
 4. Make the following edits to `ios/ShareExtension/Info.plist`
 
 ```xml
@@ -189,7 +191,7 @@ flutter pub add share_receiver
 <dict>
     <!-- Uncomment below lines if you want to use a custom group id rather than the default. Set it in Build Settings → User-Defined -->
     <!-- <key>AppGroupId</key>
-    <string>$(CUSTOM_GROUP_ID)</string> --> 
+    <string>$(CUSTOM_GROUP_ID)</string> -->
     <key>NSExtension</key>
     <dict>
         <key>NSExtensionAttributes</key>
@@ -197,7 +199,8 @@ flutter pub add share_receiver
             <key>NSExtensionActivationRule</key>
             <!-- The TRUEPREDICATE NSExtensionActivationRule that only works in development mode -->
             <!-- <string>TRUEPREDICATE</string> -->
-            <!-- Add a new rule below will allow sharing one or more file of any type, url, or text content, You can modify these rules to your liking for which types of share content, as well as how many your app can handle -->
+            <!-- Add a new rule below will allow sharing one or more file of any type, url, or text content. -->
+            <!-- You can modify these rules to your liking for which types of share content your app can handle. -->
             <string>SUBQUERY (
                 extensionItems,
                 $extensionItem,
@@ -226,90 +229,124 @@ flutter pub add share_receiver
         <string>com.apple.share-services</string>
     </dict>
 </dict>
-</plist> 
+</plist>
 ```
 
-5. Add a group identifier to both the `Runner` and `ShareExtension` Targets
-   - In Xcode, select Runner → Targets → Runner → Signing & Capabilities
-   - Click the '+' button and select `App Groups`
-   - Add a new group (default is your bundle identifier prefixed by `group.`. ex. `group.com.company.app`)
-   - Repeat those above 3 steps inside of the `ShareExtension` target adding/selecting the same group id
-6. (Optional) If you made a custom group identifier that isn't your bundle identifier prefixed by `group.`, make sure to add a custom build setting variable that is referenced in your ShareExtension's Info.plist file.
-   - Go to Targets → ShareExtension → Build Settings
-   - Click the '+' icon and select `Add User-Defined Setting`
-   - Give it the key `CUSTOM_GROUP_ID` and the value of the app group identifier that you gave to both targets in the previous step
-   - Repeat the above steps for the `Runner` target
+5. Add a group identifier to both the `Runner` and `ShareExtension` targets
+   - In Xcode, select **Runner → Targets → Runner → Signing & Capabilities**
+   - Click **+** and select **App Groups**
+   - Add a new group (default: your bundle identifier prefixed with `group.`, e.g. `group.com.company.app`)
+   - Repeat those steps inside the **ShareExtension** target using the **same** group id
 
-7. The share extension doesn't launch a UI of its own, instead it serializes the shared data and saves it to the groups shared preferences, then opens a deep link into the main app so your flutter/dart code can then read the serialized data and handle it accordingly.
+6. *(Optional)* If you used a custom group identifier that isn't your bundle identifier prefixed by `group.`, add a custom build setting in both targets:
+   - Go to **Targets → ShareExtension → Build Settings**
+   - Click **+** → **Add User-Defined Setting**
+   - Key: `CUSTOM_GROUP_ID`, Value: your app group identifier
+   - Repeat for the **Runner** target
 
-    - If your project use `Swift Package Manager` just replace the contents of `ShareExtension/ShareViewController.swift` with the following code:
+7. Wire up the Share Extension view controller
 
-      ```swift
-      import share_receiver
+   The Share Extension serializes the shared content and saves it to the shared container, then opens a deep link back into the main app. The extension itself is lightweight — it does **not** embed Flutter.
 
-      class ShareViewController: ShareReceiverServiceViewController {}
-      ```
+   > [!IMPORTANT]
+   > The Share Extension must **not** link `FlutterGeneratedPluginSwiftPackage`. That package pulls in the Flutter framework, which is too large for an extension. Use `share-receiver-models` (SPM) or `share_receiver_models` (CocoaPods) instead — both are Flutter-free.
 
-    - If your project use `CocoaPods` required add the following code inside `ios/Podfile` within the `target 'Runner' do` block, and then run `pod install` inside the `ios` directory.
+   ---
 
-      - Option 1: Use `share_receiver_models` Pod that not include Flutter dependency.
+   #### Swift Package Manager
 
-      ```ruby
-      target 'Runner' do
-        use_frameworks!
-        use_modular_headers!
+   The `share_receiver` package exposes a lightweight `share-receiver-models` product that contains only the extension-safe code (no Flutter dependency).
 
-        flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+   **Step 1 — Add `share-receiver-models` to your Share Extension target in Xcode:**
 
-        # share_receiver start
-        target 'ShareExtension' do
-          inherit! :search_paths
-          pod 'share_receiver_models', :path => '.symlinks/plugins/share_receiver/ios/share_receiver'
-        end
-        # share_receiver end
-      end
-      ```
+   - Select your **ShareExtension** target → **General → Frameworks and Libraries**
+   - Click **+**, search for `share-receiver-models` and add it
 
-      And than replace the contents of `ShareExtension/ShareViewController.swift` with the following code:
+   If `share-receiver-models` does not appear in the list:
+   - Go to **File → Add Package Dependencies → Add Local**
+   - Navigate to `ios/Flutter/ephemeral/Packages/.packages/share_receiver/`
+   - When prompted to choose products, add **only `share-receiver-models`** to the **ShareExtension** target (do **not** add `share-receiver` or add anything to the Runner target)
 
-      ```swift
-      import share_receiver_models
+   **Step 2 — Verify the Share Extension does not link `FlutterGeneratedPluginSwiftPackage`:**
 
-      class ShareViewController: ShareReceiverServiceViewController {}
-      ```
+   - Select your **ShareExtension** target → **General → Frameworks and Libraries**
+   - If `FlutterGeneratedPluginSwiftPackage` is listed, remove it
 
-      - Option 2: Use default `share_receiver` Pod that requied to include Flutter dependency.
+   **Step 3 — Replace `ShareExtension/ShareViewController.swift`:**
 
-      ```ruby
-      target 'Runner' do
-        use_frameworks!
-        use_modular_headers!
+   ```swift
+   import share_receiver_models
 
-        flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+   class ShareViewController: ShareReceiverServiceViewController {}
+   ```
 
-        # share_receiver start
-        target 'ShareExtension' do
-          inherit! :search_paths
-        end
-        # share_receiver end
-      end
-      ```
+   ---
 
-      And than replace the contents of `ShareExtension/ShareViewController.swift` with the following code:
+   #### CocoaPods
 
-      ```swift
-      import share_receiver
+   **Option 1 — Lightweight (recommended): `share_receiver_models` pod (no Flutter dependency)**
 
-      class ShareViewController: ShareReceiverServiceViewController {}
-      ```
+   Add the following inside `ios/Podfile` within the `target 'Runner' do` block, then run `pod install` inside the `ios` directory.
 
-      And make sure Xcode Scheme has Pre-Action Script for Flutter available before build.
-      
-      - Xcode → Product → Scheme → Edit Scheme → Build → Pre-action → Add Run Script
+   ```ruby
+   target 'Runner' do
+     use_frameworks!
+     use_modular_headers!
 
-      ```bash
-      /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" prepare
-      ```
+     flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+     # share_receiver start
+     target 'ShareExtension' do
+       inherit! :search_paths
+       pod 'share_receiver_models', :path => '.symlinks/plugins/share_receiver/ios/share_receiver'
+     end
+     # share_receiver end
+   end
+   ```
+
+   Replace `ShareExtension/ShareViewController.swift` with:
+
+   ```swift
+   import share_receiver_models
+
+   class ShareViewController: ShareReceiverServiceViewController {}
+   ```
+
+   **Option 2 — Full pod (`share_receiver`) with Flutter dependency**
+
+   > [!NOTE]
+   > This option links the Flutter framework into the Share Extension, which increases the extension binary size significantly. Prefer Option 1 unless you have a specific reason to use this approach.
+
+   ```ruby
+   target 'Runner' do
+     use_frameworks!
+     use_modular_headers!
+
+     flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+     # share_receiver start
+     target 'ShareExtension' do
+       inherit! :search_paths
+     end
+     # share_receiver end
+   end
+   ```
+
+   Replace `ShareExtension/ShareViewController.swift` with:
+
+   ```swift
+   import share_receiver
+
+   class ShareViewController: ShareReceiverServiceViewController {}
+   ```
+
+   Make sure the Xcode scheme has a Pre-Action Script so Flutter is available before the build:
+
+   - **Xcode → Product → Scheme → Edit Scheme → Build → Pre-action → Add Run Script**
+
+   ```bash
+   /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" prepare
+   ```
 
 ## Example
 
